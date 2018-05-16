@@ -42,7 +42,7 @@ public class PlanetController
 		return planets;
 	}
 	
-	@GetMapping("/find/{name}")
+	@GetMapping("/find/name/{name}")
 	public List<Planet> findByName(@PathVariable("name") String name)
 	{
 		List<Planet> planets = this.planetRepository.findByName(name);
@@ -50,8 +50,8 @@ public class PlanetController
 		return planets;
 	}
 	
-	@GetMapping("/find/{id}")
-	public Planet getById(@PathVariable("id") String id)
+	@GetMapping("/find/id/{id}")
+	public Planet findById(@PathVariable("id") String id)
 	{
 		Planet planet = this.planetRepository.findById(id);
 		

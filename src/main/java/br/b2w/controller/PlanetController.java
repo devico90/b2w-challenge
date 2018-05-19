@@ -2,66 +2,58 @@ package br.b2w.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.b2w.api.Planet;
-import br.b2w.repository.PlanetRepository;
+import br.b2w.service.ServicePlanet;
+
 
 @RestController
 @RequestMapping("/planets")
 public class PlanetController
 {
 	
-	@Autowired
-	private PlanetRepository planetRepository;
+	private ServicePlanet servicePlanet;
 	
-	public PlanetController(PlanetRepository planetRepository)
+	public PlanetController(ServicePlanet servicePlanet)
 	{
-		this.planetRepository = planetRepository;
+		this.servicePlanet = servicePlanet;
 	}
 	
 	@PutMapping
-	public void insert(@RequestBody Planet planet)
+	public ResponseEntity<Planet> insert(@RequestBody Planet planet)
 	{
-		this.planetRepository.insert(planet);
+		return servicePlanet.insert(planet); 
 	}
 	
 	@GetMapping("/all")
-	public List<Planet> getAll()
+	public ResponseEntity<List<Planet>> getAll()
 	{
-		List<Planet> planets = planetRepository.findAll();
-		
-		return planets;
+		return servicePlanet.getAll();
 	}
 	
 	@GetMapping("/find/name/{name}")
-	public List<Planet> findByName(@PathVariable("name") String name)
+	public ResponseEntity<List<Planet>> findByName(@PathVariable("name") String name)
 	{
-		List<Planet> planets = this.planetRepository.findByName(name);
-		
-		return planets;
+		return servicePlanet.findByNameIgnoreCase(name);
 	}
 	
 	@GetMapping("/find/id/{id}")
-	public Planet findById(@PathVariable("id") String id)
+	public ResponseEntity<Planet> findById(@PathVariable("id") String id)
 	{
-		Planet planet = this.planetRepository.findById(id);
-		
-		return planet;
+		return servicePlanet.findById(id);
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public void delete(@PathVariable("id") String id)
-	{
-		this.planetRepository.delete(id);
-	}
+//	@DeleteMapping("/delete/{id}")
+//	public void delete(@PathVariable("id") String id)
+//	{
+//		this.planetRepository.delete(id);
+//	}
 	
 }

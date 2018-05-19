@@ -1,7 +1,6 @@
 package br.b2w;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -23,15 +22,17 @@ public class DbSeeder implements CommandLineRunner
 	@Override
 	public void run(String...strings) throws Exception
 	{
-		Planet terra = new Planet("Terra","Quente","Favela", 20);
-		
-		Planet marte = new Planet("Marte", "Quente", "Rochoso", 15);
-		
 		this.planetRepository.deleteAll();
+
+		Planet terra = new Planet("TERRA","Quente","Favela", 20);
 		
-		List<Planet> planets = Arrays.asList(terra, marte);
+		Planet marte = new Planet("MARTE", "Quente", "Rochoso", 15);
 		
-		this.planetRepository.save(planets);
+		Planet venus = new Planet("VENUS", "FRIO", "Rochoso", 12);
+		
+		Planet plutao = new Planet("PLUTAO", "geladasso", "montanhoso", 5);
+		
+		this.planetRepository.save(Arrays.asList(terra, marte, venus, plutao));
 				
 	}
 

@@ -27,14 +27,46 @@ public class Planet
 		this.countFilms = countFilms;
 	}
 
-	public String getId() { return id; }
+	public String getId() {
+		return id;
+	}
 
-	public String getName() { return name; }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-	public String getClimate() { return climate; }
+	public String getName() {
+		return name;
+	}
 
-	public String getTerrain() { return terrain; }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-	public int getCountFilms() { return countFilms; }
+	public String getClimate() {
+		return climate;
+	}
+
+	public void setClimate(String climate) {
+		this.climate = climate;
+	}
+
+	public String getTerrain() {
+		return terrain;
+	}
+
+	public void setTerrain(String terrain) {
+		this.terrain = terrain;
+	}
+
+	public int getCountFilms() {
+		return countFilms;
+	}
+
+	public void setCountFilms(int countFilms) {
+		this.countFilms = countFilms;
+	}
+
+	
 	
 }

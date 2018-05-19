@@ -10,12 +10,17 @@ import br.b2w.api.Planet;
 
 
 @Repository
-public interface PlanetRepository extends MongoRepository<Planet, String> {
+public interface PlanetRepository extends MongoRepository<Planet, String> 
+{
 	
-	Planet findById(String id);
+	/*Planet findById(String id);*/
 	
-	@Query(value = "{name:?0}")
-	List<Planet> findByName(String name);
+	List<Planet> findAll();
+	
+	@Query("{ 'name' : ?0 }")
+	List<Planet> findByNameIgnoreCase(String name);
+	
+	Planet findOne(String id);
 	
 }
 	

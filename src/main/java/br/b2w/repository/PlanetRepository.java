@@ -18,7 +18,7 @@ public interface PlanetRepository extends MongoRepository<Planet, String>
 	List<Planet> findAll();
 	
 	@Query("{ 'name' : ?0 }")
-	List<Planet> findByNameIgnoreCase(String name);
+	List<Planet> findByName(String name);
 	
 	Planet findOne(String id);
 	

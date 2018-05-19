@@ -10,9 +10,6 @@ public interface IServicePlanet
 {
 	ResponseEntity<Planet> insert(Planet planet);
 	ResponseEntity<List<Planet>> getAll();
-	ResponseEntity<List<Planet>> findByNameIgnoreCase(String name);
-	ResponseEntity<Planet> findById(String id);
-//	ResponseEntity<String> delete(Planet planet);
+	ResponseEntity<?> find(String name, String id);
 	ResponseEntity<String> deleteById(String id);
-//	ResponseEntity<String> deleteByName(String name);
 }

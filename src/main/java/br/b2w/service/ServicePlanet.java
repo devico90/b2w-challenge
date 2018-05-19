@@ -3,6 +3,7 @@ package br.b2w.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -57,34 +58,37 @@ public class ServicePlanet implements IServicePlanet
 	}
 
 	@Override
-	public ResponseEntity<List<Planet>> findByNameIgnoreCase(String name) {
-		List<Planet> planets = planetRepository.findByNameIgnoreCase(name.toUpperCase());
+	public ResponseEntity<?> find(String name, String id) {
 		
-		if (planets.size() == 0)
+		ResponseEntity<?> re = null;
+		
+		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
-			throw new PlanetNotFoundException(1);
+			List<Planet> planets = planetRepository.findByName(name.toUpperCase());
+			if (planets.size() == 0)
+			{
+				throw new PlanetNotFoundException(1);
+			}
+			re = new ResponseEntity<List<Planet>>(planets, HttpStatus.OK);
+		}
+		else
+		{
+			Planet planet = null;
+			if (id != null && !id.equals("")) //caso o parâmetro NOME não esteja preenchido, mas tenha o parâmetro ID, faz a busca por ID
+			{
+				planet = planetRepository.findOne(id);
+				re = new ResponseEntity<Planet>(planet, HttpStatus.OK);
+			}
+			
+			if (planet == null)
+			{
+				throw new PlanetNotFoundException(0);
+			}
 		}
 		
-		return ResponseEntity.ok(planets);
+		return re;
 	}
 	
-	@Override
-	public ResponseEntity<Planet> findById(String id)
-	{
-		Planet planet = null;
-		if (id != null && !id.equals(""))
-		{
-			planet = planetRepository.findOne(id);
-		}
-		
-		if (planet == null)
-		{
-			throw new PlanetNotFoundException(0);
-		}
-		
-		return ResponseEntity.ok(planet);
-	}
-
 	@Override
 	public ResponseEntity<String> deleteById(String id) 
 	{

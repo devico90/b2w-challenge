@@ -26,6 +26,18 @@ public class PlanetController
 	}
 	
 	/*
+	 * Método GET para realizar a listagem de todos os planetas
+	 * URL: http://localhost:8080/planets/all
+	 * TODO: paginação
+	 */
+	@GetMapping
+	public ResponseEntity<String> getAll()
+	{
+		return servicePlanet.getAll();
+	}
+	
+	
+	/*
 	 * Método PUT para fazer inserção de planeta
 	 * Verifica, pelo nome, se o planeta já existe na base de dados
 	 * Caso o planeta não exista na base de dados, irá buscar na SWAPI
@@ -48,17 +60,6 @@ public class PlanetController
 	public ResponseEntity<Planet> insert(@RequestBody Planet planet)
 	{
 		return servicePlanet.insert(planet); 
-	}
-	
-	/*
-	 * Método GET para realizar a listagem de todos os planetas
-	 * URL: http://localhost:8080/planets/all
-	 * TODO: paginação
-	 */
-	@GetMapping
-	public ResponseEntity<String> getAll()
-	{
-		return servicePlanet.getAll();
 	}
 	
 	/*

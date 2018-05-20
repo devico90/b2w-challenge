@@ -5,7 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Planets {
+public class Planets 
+{
 	
 	int count;
 	String next;
@@ -55,7 +56,5 @@ public class Planets {
 	{
 		this.results = results;
 	}
-
-	
 	
 }

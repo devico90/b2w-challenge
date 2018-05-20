@@ -1,11 +1,8 @@
 package br.b2w.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +49,7 @@ public class PlanetController
 	 * TODO: paginação
 	 */
 	@GetMapping("/all")
-	public ResponseEntity<List<Planet>> getAll()
+	public ResponseEntity<String> getAll()
 	{
 		return servicePlanet.getAll();
 	}
@@ -63,7 +60,7 @@ public class PlanetController
 	 * 		  http://localhost:8080/planets/find?id=ID do planeta 
 	 */
 	@GetMapping("/find")
-	public ResponseEntity<?> find(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
+	public String find(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{
 		return servicePlanet.find(name, id);
 	}

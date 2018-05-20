@@ -26,7 +26,8 @@ public class ServicePlanet implements IServicePlanet
 	final String URL_PLANETS = "https://swapi.co/planets";
 	
 	@Bean
-	public RestTemplate restTemplate() {
+	public RestTemplate restTemplate()
+	{
 	    return new RestTemplate();
 	}
 	
@@ -65,21 +66,31 @@ public class ServicePlanet implements IServicePlanet
 	}
 
 	@Override
-	public ResponseEntity<List<Planet>> getAll() {
-		List<Planet> planets = null;
+	public ResponseEntity<String> getAll() 
+	{
+		StringBuilder listPlanetStr = new StringBuilder();
+		List<Planet> listPlanet = null;
 		
-		planets = planetRepository.findAll();
+		listPlanet = planetRepository.findAll();
 		
-		if (planets != null)
+		if (listPlanet != null)
 		{
-			return ResponseEntity.ok(planets);
+			listPlanetStr.append("[");
+			for (Planet planet : listPlanet)
+			{
+				listPlanetStr.append(planet);
+				listPlanetStr.append(",");
+			}
+			listPlanetStr.deleteCharAt(listPlanetStr.lastIndexOf(","));
+			listPlanetStr.append("]");
 		}
 		
-		return null;
+		return ResponseEntity.ok(listPlanetStr.toString());
 	}
 
 	@Override
-	public ResponseEntity<?> find(String name, String id) {
+	public String find(String name, String id) 
+	{
 		
 		ResponseEntity<?> re = null;
 		
@@ -107,7 +118,7 @@ public class ServicePlanet implements IServicePlanet
 			}
 		}
 		
-		return re;
+		return re.getBody().toString();
 	}
 	
 	@Override
@@ -150,7 +161,5 @@ public class ServicePlanet implements IServicePlanet
 		
 		return re;
 	}	
-	
-	
 	
 }

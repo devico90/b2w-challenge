@@ -1,5 +1,6 @@
 package br.b2w.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -21,6 +22,7 @@ public class Planet
 	
 	public Planet()
 	{ 
+		films = new ArrayList<String>();
 	}
 	
 	public Planet(String name, String climate, String terrain, List<String> films)
@@ -84,9 +86,15 @@ public class Planet
 	@Override
 	public String toString()
 	{
+		int countFilms = films.size();
 		StringBuilder str = new StringBuilder();
 		str.append("{");
-		str.append("\"id\": \""+id+"\"");
+		str.append("\"id\": \""+id+"\",");
+		str.append("\"name\": \""+name+"\",");
+		str.append("\"climate\": \""+climate+"\",");
+		str.append("\"terrain\": \""+terrain+"\",");
+		str.append("\"countFilms\": \""+countFilms+"\"");
+		str.append("}");
 		
 		return str.toString();
 	}

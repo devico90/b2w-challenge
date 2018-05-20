@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.b2w.api.Planet;
-import br.b2w.service.ServicePlanet;
+import br.b2w.service.PlanetService;
 
 
 @RestController
@@ -18,9 +18,9 @@ import br.b2w.service.ServicePlanet;
 public class PlanetController
 {
 	
-	private ServicePlanet servicePlanet;
+	private PlanetService servicePlanet;
 	
-	public PlanetController(ServicePlanet servicePlanet)
+	public PlanetController(PlanetService servicePlanet)
 	{
 		this.servicePlanet = servicePlanet;
 	}
@@ -55,7 +55,7 @@ public class PlanetController
 	 * URL: http://localhost:8080/planets/all
 	 * TODO: paginação
 	 */
-	@GetMapping("/all")
+	@GetMapping
 	public ResponseEntity<String> getAll()
 	{
 		return servicePlanet.getAll();
@@ -79,7 +79,7 @@ public class PlanetController
 	 * URL's: http://localhost:8080/remove?name=Nome do planeta
 	 * 		  http://localhost:8080/remove?id=ID do planeta
 	 */
-	@DeleteMapping("/delete")
+	@DeleteMapping
 	public ResponseEntity<String> delete(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{
 		return servicePlanet.delete(name, id);

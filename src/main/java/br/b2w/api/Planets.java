@@ -57,6 +57,4 @@ public class Planets
 		this.results = results;
 	}
 
-	
-	
 }

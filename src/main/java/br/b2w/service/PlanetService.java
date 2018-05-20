@@ -19,7 +19,7 @@ import br.b2w.api.Planets;
 import br.b2w.repository.PlanetRepository;
 
 @Service
-public class ServicePlanet implements IServicePlanet
+public class PlanetService implements IPlanetService
 {
 
 	@Autowired
@@ -166,19 +166,19 @@ public class ServicePlanet implements IServicePlanet
 	@Override
 	public ResponseEntity<String> delete(String name, String id) 
 	{
-		ResponseEntity<String> re = null;
+		ResponseEntity<String> responseEntity = null;
 		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
 			List<Planet> planets = planetRepository.findByNameIgnoreCase(name);
 			if (planets.size() == 0)
 			{
-				throw new PlanetNotFoundException(1);
+				throw new PlanetNotFoundException(1); //caso não encontre o planeta com esse nome na base de dados 
 			}
 			for (Planet planet : planets)
 			{
-				planetRepository.delete(planet);
+				planetRepository.delete(planet); //caso encontre, remove-o
 			}
-			re = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"", HttpStatus.OK);
+			responseEntity = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"}", HttpStatus.OK);
 		}
 		else
 		{
@@ -197,47 +197,34 @@ public class ServicePlanet implements IServicePlanet
 				
 				planetRepository.delete(id);
 				
-				re = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"}", HttpStatus.OK);
+				responseEntity = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"}", HttpStatus.OK);
 			}
 		}
 		
-		return re;
+		return responseEntity;
 	}
 	
-	public int getCountFilmsSWAPIByName(String name)
-	{
-		String URL_PLANETS = "https://swapi.co/api/planets/?search="+name;
-		RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.add("user-agent", "HTTPie/1.0.0-dev");
-        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-        ResponseEntity<Planets> planets = restTemplate.exchange(URL_PLANETS, HttpMethod.GET, entity, Planets.class);
-        
-        List<PlanetSWAPI> listPlanetSWAPI = planets.getBody().getResults();
-        
-        int countFilms = 0;
-        if (listPlanetSWAPI.size() > 0)
-        {
-        	countFilms = listPlanetSWAPI.get(0).getFilms().size();
-        }
-        
-		return countFilms;
-	}
-	
+	/*
+	 * Método para fazer a busca na SWAPI pública pelo nome do planeta e retornar o planeta, caso encontre
+	 */
 	public Planet getPlanetSWAPIByName(String name)
 	{
+		Planet planet = null;
+		
 		String URL_PLANETS = "https://swapi.co/api/planets/?search="+name;
+		
 		RestTemplate restTemplate = new RestTemplate();
+		
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.add("user-agent", "HTTPie/1.0.0-dev");
+        
         HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        
         ResponseEntity<Planets> planets = restTemplate.exchange(URL_PLANETS, HttpMethod.GET, entity, Planets.class);
         
         List<PlanetSWAPI> listPlanetSWAPI = planets.getBody().getResults();
         
-        Planet planet = null;
         if (listPlanetSWAPI.size() > 0)
         {
         	planet = new Planet();

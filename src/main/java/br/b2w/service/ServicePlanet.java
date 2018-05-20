@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import br.b2w.api.Planet;
 import br.b2w.repository.PlanetRepository;
-import br.b2w.utils.Utils;
 
 @Service
 public class ServicePlanet implements IServicePlanet
@@ -26,7 +25,7 @@ public class ServicePlanet implements IServicePlanet
 		String idPlanet = planet.getId();
 		if (idPlanet != null)
 		{
-			if (Utils.exists(planetRepository, idPlanet))
+			if (planetRepository.exists(planet.getId()))
 			{
 				throw new PlanetAlreadyExistsException();
 			}
@@ -90,36 +89,44 @@ public class ServicePlanet implements IServicePlanet
 	}
 	
 	@Override
-	public ResponseEntity<String> deleteById(String id) 
+	public ResponseEntity<String> delete(String name, String id) 
 	{
-		Planet planet = null;
-		if (id != null && !id.equals(""))
+		ResponseEntity<String> re = null;
+		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
-			planet = planetRepository.findOne(id);
+			List<Planet> planets = planetRepository.findByName(name.toUpperCase());
+			if (planets.size() == 0)
+			{
+				throw new PlanetNotFoundException(1);
+			}
+			for (Planet planet : planets)
+			{
+				planetRepository.delete(planet);
+			}
+			re = new ResponseEntity<String>("{\"Sucesso:\":{\"Mensagem:\":\"Planeta(s) removido(s)\",\"Quantidade\":\""+planets.size()+"\"}}", HttpStatus.OK);
+		}
+		else
+		{
+			if (id != null && !id.equals("")) //caso o parâmetro NOME não esteja preenchido, mas tenha o parâmetro ID, faz a busca por ID
+			{
+				Planet planet = null;
+				if (id != null && !id.equals(""))
+				{
+					planet = planetRepository.findOne(id);
+				}
+				
+				if (planet == null)
+				{
+					throw new PlanetNotFoundException(0);
+				}
+				
+				planetRepository.delete(id);
+				
+				re = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"}", HttpStatus.OK);
+			}
 		}
 		
-		if (planet == null)
-		{
-			throw new PlanetNotFoundException(0);
-		}
-		
-		planetRepository.delete(planet);
-		
-		return ResponseEntity.ok("Planeta excluído com sucesso");
-	}
-
-//	@Override
-//	public ResponseEntity<String> deleteById(String id) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public ResponseEntity<String> deleteByName(String name) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-	
-	
+		return re;
+	}	
 	
 }

@@ -11,5 +11,5 @@ public interface IServicePlanet
 	ResponseEntity<Planet> insert(Planet planet);
 	ResponseEntity<List<Planet>> getAll();
 	ResponseEntity<?> find(String name, String id);
-	ResponseEntity<String> deleteById(String id);
+	ResponseEntity<String> delete(String name, String id);
 }

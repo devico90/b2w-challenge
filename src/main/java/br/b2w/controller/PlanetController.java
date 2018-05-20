@@ -1,6 +1,5 @@
 package br.b2w.controller;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -68,10 +67,10 @@ public class PlanetController
 		return servicePlanet.find(name, id);
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public void delete(@PathVariable("id") String id)
+	@DeleteMapping("/delete")
+	public ResponseEntity<String> delete(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{
-		servicePlanet.deleteById(id);
+		return servicePlanet.delete(name, id);
 	}
 	
 }

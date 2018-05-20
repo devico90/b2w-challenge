@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import br.b2w.api.Planet;
 import br.b2w.api.PlanetSWAPI;
 import br.b2w.api.Planets;
+import br.b2w.exception.PlanetAlreadyExistsException;
+import br.b2w.exception.PlanetNotFoundException;
 import br.b2w.repository.PlanetRepository;
 
 @Service

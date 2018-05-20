@@ -13,8 +13,6 @@ import br.b2w.api.Planet;
 public interface PlanetRepository extends MongoRepository<Planet, String> 
 {
 	
-	/*Planet findById(String id);*/
-	
 	List<Planet> findAll();
 	
 	@Query("{ 'name' : ?0 }")

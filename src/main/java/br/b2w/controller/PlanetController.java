@@ -27,14 +27,21 @@ public class PlanetController
 	
 	/*
 	 * Método PUT para fazer inserção de planeta
-	 * Caso a ID seja preenchida, verificará se já existe
-	 * Caso contrário, fará a inserção gerando uma nova ID, não fazendo verificação por nome
+	 * Verifica, pelo nome, se o planeta já existe na base de dados
+	 * Caso o planeta não exista na base de dados, irá buscar na SWAPI
+	 * Se encontrar, faz a inserção automática do planeta na base
+	 * Não achei necessário criar o objeto "Film" para este projeto, visto que não existe especificação para tal e o uso atualmente seria inútil
+	 * 
 	 * URL: http://localhost:8080/planets
 	 * BODY: {
-	 * 			"id": "ID" (não é obrigatório)
-	 * 		 	"name": "Nome do planeta"
-	 * 			"climate": "Clima do planeta"
-	 * 			"terrain": "Terreno do planeta"
+	 * 			"id": "ID", (não é obrigatório)
+	 * 		 	"name": "Nome do planeta",
+	 * 			"climate": "Clima do planeta",
+	 * 			"terrain": "Terreno do planeta",
+	 * 			"films": [
+	 * 				"Link do filme",
+	 * 				"Link do filme"
+	 * 			]
 	 * 		 }	
 	 */
 	@PutMapping
@@ -60,7 +67,7 @@ public class PlanetController
 	 * 		  http://localhost:8080/planets/find?id=ID do planeta 
 	 */
 	@GetMapping("/find")
-	public String find(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
+	public ResponseEntity<String> find(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{
 		return servicePlanet.find(name, id);
 	}
@@ -76,6 +83,12 @@ public class PlanetController
 	public ResponseEntity<String> delete(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{
 		return servicePlanet.delete(name, id);
+	}
+	
+	@GetMapping("/getPlanetSWAPIByName")
+	public Planet getPlanetSWAPIByName(@RequestParam("name") String name)
+	{
+		return servicePlanet.getPlanetSWAPIByName(name);
 	}
 	
 }

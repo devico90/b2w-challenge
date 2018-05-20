@@ -11,7 +11,7 @@ public class Planets
 	int count;
 	String next;
 	String previous;
-	List<Planet> results;
+	List<PlanetSWAPI> results;
 	
 	public Planets()
 	{
@@ -47,14 +47,16 @@ public class Planets
 		this.previous = previous;
 	}
 
-	public List<Planet> getResults() 
+	public List<PlanetSWAPI> getResults()
 	{
 		return results;
 	}
 
-	public void setResults(List<Planet> results)
+	public void setResults(List<PlanetSWAPI> results) 
 	{
 		this.results = results;
 	}
+
+	
 	
 }

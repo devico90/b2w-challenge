@@ -4,13 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import br.b2w.api.Planet;
+import br.b2w.api.PlanetSWAPI;
 import br.b2w.api.Planets;
 import br.b2w.repository.PlanetRepository;
 
@@ -21,24 +25,6 @@ public class ServicePlanet implements IServicePlanet
 	@Autowired
 	private PlanetRepository planetRepository;
 	
-	private RestTemplate restTemplate;
-	
-	final String URL_PLANETS = "https://swapi.co/planets";
-	
-	@Bean
-	public RestTemplate restTemplate()
-	{
-	    return new RestTemplate();
-	}
-	
-	@Override
-	public List<Planets> getAllPlanets()
-	{
-		ResponseEntity<Planets[]> response = restTemplate.getForEntity(URL_PLANETS, Planets[].class);
-		
-		return Arrays.asList(response.getBody());
-	}
-	
 	@Override
 	public ResponseEntity<Planet> insert(Planet planet) 
 	{
@@ -47,7 +33,7 @@ public class ServicePlanet implements IServicePlanet
 		String idPlanet = planet.getId();
 		if (idPlanet != null)
 		{
-			if (planetRepository.exists(planet.getId()))
+			if ( planetRepository.exists(planet.getId()) )
 			{
 				throw new PlanetAlreadyExistsException();
 			}
@@ -87,21 +73,37 @@ public class ServicePlanet implements IServicePlanet
 		
 		return ResponseEntity.ok(listPlanetStr.toString());
 	}
-
+	
 	@Override
-	public String find(String name, String id) 
+	public ResponseEntity<String> find(String name, String id) 
 	{
+		StringBuilder listPlanetStr = new StringBuilder();
 		
-		ResponseEntity<?> re = null;
 		
 		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
-			List<Planet> planets = planetRepository.findByName(name.toUpperCase());
+			List<Planet> planets = planetRepository.findByName(name.toUpperCase()); //procura na base de dados local se já existe o planeta cadastrado
 			if (planets.size() == 0)
 			{
-				throw new PlanetNotFoundException(1);
+				Planet planet = getPlanetSWAPIByName(name.toUpperCase()); //caso negativo, busca na SWAPI
+				if (planet != null) 
+				{
+					planetRepository.insert(planet); //se encontrar na SWAPI, insere o planeta no banco
+					planets.add(planet);
+				}
+				else
+				{
+					throw new PlanetNotFoundException(1); //se não encontrar, informa que o planeta não foi encontrado
+				}
 			}
-			re = new ResponseEntity<List<Planet>>(planets, HttpStatus.OK);
+			listPlanetStr.append("[");
+			for (Planet planet : planets)
+			{
+				listPlanetStr.append(planet);
+				listPlanetStr.append(",");
+			}
+			listPlanetStr.deleteCharAt(listPlanetStr.lastIndexOf(","));
+			listPlanetStr.append("]");
 		}
 		else
 		{
@@ -109,7 +111,7 @@ public class ServicePlanet implements IServicePlanet
 			if (id != null && !id.equals("")) //caso o parâmetro NOME não esteja preenchido, mas tenha o parâmetro ID, faz a busca por ID
 			{
 				planet = planetRepository.findOne(id);
-				re = new ResponseEntity<Planet>(planet, HttpStatus.OK);
+				listPlanetStr.append(planet);
 			}
 			
 			if (planet == null)
@@ -118,7 +120,7 @@ public class ServicePlanet implements IServicePlanet
 			}
 		}
 		
-		return re.getBody().toString();
+		return ResponseEntity.ok(listPlanetStr.toString());
 	}
 	
 	@Override
@@ -160,6 +162,53 @@ public class ServicePlanet implements IServicePlanet
 		}
 		
 		return re;
-	}	
+	}
+	
+	public int getCountFilmsSWAPIByName(String name)
+	{
+		String URL_PLANETS = "https://swapi.co/api/planets/?search="+name;
+		RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.add("user-agent", "HTTPie/1.0.0-dev");
+        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        ResponseEntity<Planets> planets = restTemplate.exchange(URL_PLANETS, HttpMethod.GET, entity, Planets.class);
+        
+        List<PlanetSWAPI> listPlanetSWAPI = planets.getBody().getResults();
+        
+        int countFilms = 0;
+        if (listPlanetSWAPI.size() > 0)
+        {
+        	countFilms = listPlanetSWAPI.get(0).getFilms().size();
+        }
+        
+		return countFilms;
+	}
+	
+	public Planet getPlanetSWAPIByName(String name)
+	{
+		String URL_PLANETS = "https://swapi.co/api/planets/?search="+name;
+		RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.add("user-agent", "HTTPie/1.0.0-dev");
+        HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+        ResponseEntity<Planets> planets = restTemplate.exchange(URL_PLANETS, HttpMethod.GET, entity, Planets.class);
+        
+        List<PlanetSWAPI> listPlanetSWAPI = planets.getBody().getResults();
+        
+        Planet planet = null;
+        if (listPlanetSWAPI.size() > 0)
+        {
+        	planet = new Planet();
+        	PlanetSWAPI planetSWAPI = listPlanetSWAPI.get(0);
+        	planet.setName(planetSWAPI.getName());
+        	planet.setClimate(planetSWAPI.getClimate());
+        	planet.setTerrain(planetSWAPI.getTerrain());
+        	planet.setFilms(planetSWAPI.getFilms());
+        }
+        
+		return planet;
+	}
 	
 }

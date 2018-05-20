@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import br.b2w.api.Planet;
+import br.b2w.api.Planets;
 
 public interface IServicePlanet  
 {
@@ -12,4 +13,5 @@ public interface IServicePlanet
 	ResponseEntity<List<Planet>> getAll();
 	ResponseEntity<?> find(String name, String id);
 	ResponseEntity<String> delete(String name, String id);
+	List<Planets> getAllPlanets();
 }

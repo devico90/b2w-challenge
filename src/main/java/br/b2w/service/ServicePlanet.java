@@ -1,13 +1,17 @@
 package br.b2w.service;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import br.b2w.api.Planet;
+import br.b2w.api.Planets;
 import br.b2w.repository.PlanetRepository;
 
 @Service
@@ -16,7 +20,24 @@ public class ServicePlanet implements IServicePlanet
 
 	@Autowired
 	private PlanetRepository planetRepository;
-
+	
+	private RestTemplate restTemplate;
+	
+	final String URL_PLANETS = "https://swapi.co/planets";
+	
+	@Bean
+	public RestTemplate restTemplate() {
+	    return new RestTemplate();
+	}
+	
+	@Override
+	public List<Planets> getAllPlanets()
+	{
+		ResponseEntity<Planets[]> response = restTemplate.getForEntity(URL_PLANETS, Planets[].class);
+		
+		return Arrays.asList(response.getBody());
+	}
+	
 	@Override
 	public ResponseEntity<Planet> insert(Planet planet) 
 	{
@@ -35,6 +56,7 @@ public class ServicePlanet implements IServicePlanet
 		insertPlanet.setName(planet.getName().toUpperCase());
 		insertPlanet.setClimate(planet.getClimate().toUpperCase());
 		insertPlanet.setTerrain(planet.getTerrain().toUpperCase());
+		insertPlanet.setFilms(planet.getFilms());
 		
 		planetRepository.insert(insertPlanet);
 		
@@ -128,5 +150,7 @@ public class ServicePlanet implements IServicePlanet
 		
 		return re;
 	}	
+	
+	
 	
 }

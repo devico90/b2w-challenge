@@ -28,17 +28,18 @@ public class PlanetController
 		this.servicePlanet = servicePlanet;
 	}
 	
-	
 	/*
 	 * Método PUT para fazer inserção de planeta
+	 * Caso a ID seja preenchida, verificará se já existe
+	 * Caso contrário, fará a inserção gerando uma nova ID, não fazendo verificação por nome
 	 * URL: http://localhost:8080/planets
 	 * BODY: {
+	 * 			"id": "ID" (não é obrigatório)
 	 * 		 	"name": "Nome do planeta"
 	 * 			"climate": "Clima do planeta"
 	 * 			"terrain": "Terreno do planeta"
 	 * 		 }	
 	 */
-	
 	@PutMapping
 	public ResponseEntity<Planet> insert(@RequestBody Planet planet)
 	{
@@ -67,6 +68,13 @@ public class PlanetController
 		return servicePlanet.find(name, id);
 	}
 	
+	/*
+	 * Método DELETE para remover planetas por ID ou por NAME
+	 * Caso o parâmetro seja NAME, remove TODOS os planetas com esse respectivo NAME
+	 * Caso o parâmetro seja ID, remove apenas o planeta com o respectivo ID
+	 * URL's: http://localhost:8080/remove?name=Nome do planeta
+	 * 		  http://localhost:8080/remove?id=ID do planeta
+	 */
 	@DeleteMapping("/delete")
 	public ResponseEntity<String> delete(@RequestParam(value="name",required=false) String name, @RequestParam(value="id",required=false) String id)
 	{

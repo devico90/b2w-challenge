@@ -1,6 +1,8 @@
 package br.b2w;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -23,16 +25,24 @@ public class DbSeeder implements CommandLineRunner
 	public void run(String...strings) throws Exception
 	{
 		this.planetRepository.deleteAll();
-
-		Planet terra = new Planet("TERRA","Quente","Favela", 20);
 		
-		Planet marte = new Planet("MARTE", "Quente", "Rochoso", 15);
+		List<String> listaFilmes = new ArrayList<String>();
 		
-		Planet venus = new Planet("VENUS", "FRIO", "Rochoso", 12);
+		listaFilmes.add("Filme terra");
+		Planet terra = new Planet("TERRA","Quente","Favela", listaFilmes);
+		planetRepository.save(terra);
 		
-		Planet plutao = new Planet("PLUTAO", "geladasso", "montanhoso", 5);
+		listaFilmes.add("Filmes terra e marte");
+		Planet marte = new Planet("MARTE", "Quente", "Rochoso", listaFilmes);
+		planetRepository.save(marte);
 		
-		this.planetRepository.save(Arrays.asList(terra, marte, venus, plutao));
+		listaFilmes.add("Filmes terra e marte e venus");
+		Planet venus = new Planet("VENUS", "FRIO", "Rochoso", listaFilmes);
+		planetRepository.save(venus);
+		
+		listaFilmes.add("Filmes terra e marte e venus e plutao");
+		Planet plutao = new Planet("PLUTAO", "geladasso", "montanhoso", listaFilmes);
+		planetRepository.save(plutao);		
 				
 	}
 

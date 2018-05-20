@@ -1,12 +1,14 @@
 package br.b2w.api;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 
 @Data
-@Document(collection = "Planets")
+@Document(collection = "Planet")
 public class Planet 
 {
 	
@@ -15,58 +17,78 @@ public class Planet
 	private String name;
 	private String climate;
 	private String terrain;
-	private int countFilms;
+	private List<String> films;
 	
-	public Planet() { }
+	public Planet()
+	{ 
+	}
 	
-	public Planet(String name, String climate, String terrain, int countFilms)
+	public Planet(String name, String climate, String terrain, List<String> films)
 	{
 		this.name = name;
 		this.climate = climate;
 		this.terrain = terrain;
-		this.countFilms = countFilms;
+		this.films = films;
 	}
 
-	public String getId() {
+	public String getId()
+	{
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(String id) 
+	{
 		this.id = id;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) 
+	{
 		this.name = name;
 	}
 
-	public String getClimate() {
+	public String getClimate()
+	{
 		return climate;
 	}
 
-	public void setClimate(String climate) {
+	public void setClimate(String climate) 
+	{
 		this.climate = climate;
 	}
 
-	public String getTerrain() {
+	public String getTerrain() 
+	{
 		return terrain;
 	}
 
-	public void setTerrain(String terrain) {
+	public void setTerrain(String terrain)
+	{
 		this.terrain = terrain;
 	}
 
-	public int getCountFilms() {
-		return countFilms;
+	public List<String> getFilms()
+	{
+		return films;
 	}
 
-	public void setCountFilms(int countFilms) {
-		this.countFilms = countFilms;
+	public void setFilms(List<String> films) 
+	{
+		this.films = films;
 	}
-
 	
+	@Override
+	public String toString()
+	{
+		StringBuilder str = new StringBuilder();
+		str.append("{");
+		str.append("\"id\": \""+id+"\"");
+		
+		return str.toString();
+	}
 	
 }

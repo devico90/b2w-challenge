@@ -28,26 +28,62 @@ public class ServicePlanet implements IServicePlanet
 	@Override
 	public ResponseEntity<Planet> insert(Planet planet) 
 	{
-		Planet insertPlanet = new Planet();
+		Planet newPlanet = null;
 		
-		String idPlanet = planet.getId();
-		if (idPlanet != null)
+		String name = planet.getName();
+		
+		List<Planet> planets = planetRepository.findByNameIgnoreCase(name); //busca na base pelo nome
+		
+		if (planets.size() > 0) 
 		{
-			if ( planetRepository.exists(planet.getId()) )
-			{
-				throw new PlanetAlreadyExistsException();
-			}
-			insertPlanet.setId(idPlanet);
+			throw new PlanetAlreadyExistsException(0); //caso exista um planeta com esse nome ou com essa id, dispara exceção
 		}
-
-		insertPlanet.setName(planet.getName().toUpperCase());
-		insertPlanet.setClimate(planet.getClimate().toUpperCase());
-		insertPlanet.setTerrain(planet.getTerrain().toUpperCase());
-		insertPlanet.setFilms(planet.getFilms());
+		else
+		{
+			if (planet.getId() != null && planetRepository.exists(planet.getId()))
+			{
+				throw new PlanetAlreadyExistsException(1); //caso exista um planeta com esse nome ou com essa id, dispara exceção
+			}
+			else
+			{
+				newPlanet = getPlanetSWAPIByName(name); //caso contrário, busca na SWAPI pelo nome
+				if (newPlanet != null)
+				{
+					
+					//caso o planeta com o respectivo nome seja encontrado
+					//irá inserir a ID passada pelo usuário
+					//e irá sobrescrever dados de clima, terreno e filmes, caso o usuário passe esses parâmetros
+					
+					String idPlanet = planet.getId();
+					if (idPlanet != null)
+					{
+						newPlanet.setId(idPlanet);
+					}
+					String climate = planet.getClimate();
+					if (climate != null)
+					{
+						newPlanet.setClimate(climate);
+					}
+					String terrain = planet.getTerrain();
+					if (terrain != null)
+					{
+						newPlanet.setTerrain(terrain);
+					}
+					List<String> films = planet.getFilms();
+					if (films.size() > 0)
+					{
+						newPlanet.setFilms(films);
+					}
+					planetRepository.insert(newPlanet); //adiciona o novo planeta ao banco
+				}
+				else
+				{
+					throw new PlanetNotFoundException(1); //caso o planeta não seja encontrado na SWAPI
+				}
+			}
+		}
 		
-		planetRepository.insert(insertPlanet);
-		
-		return ResponseEntity.ok(insertPlanet);
+		return ResponseEntity.ok(newPlanet);
 		
 	}
 
@@ -59,7 +95,7 @@ public class ServicePlanet implements IServicePlanet
 		
 		listPlanet = planetRepository.findAll();
 		
-		if (listPlanet != null)
+		if (listPlanet.size() > 0)
 		{
 			listPlanetStr.append("[");
 			for (Planet planet : listPlanet)
@@ -69,6 +105,10 @@ public class ServicePlanet implements IServicePlanet
 			}
 			listPlanetStr.deleteCharAt(listPlanetStr.lastIndexOf(","));
 			listPlanetStr.append("]");
+		}
+		else
+		{
+			throw new PlanetNotFoundException(2);
 		}
 		
 		return ResponseEntity.ok(listPlanetStr.toString());
@@ -82,11 +122,11 @@ public class ServicePlanet implements IServicePlanet
 		
 		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
-			List<Planet> planets = planetRepository.findByName(name.toUpperCase()); //procura na base de dados local se já existe o planeta cadastrado
+			List<Planet> planets = planetRepository.findByNameIgnoreCase(name); //procura na base de dados local se já existe o planeta cadastrado
 			if (planets.size() == 0)
 			{
-				Planet planet = getPlanetSWAPIByName(name.toUpperCase()); //caso negativo, busca na SWAPI
-				if (planet != null) 
+				Planet planet = getPlanetSWAPIByName(name); //caso negativo, busca na SWAPI
+				if (planet != null)
 				{
 					planetRepository.insert(planet); //se encontrar na SWAPI, insere o planeta no banco
 					planets.add(planet);
@@ -129,7 +169,7 @@ public class ServicePlanet implements IServicePlanet
 		ResponseEntity<String> re = null;
 		if (name != null && !name.equals("")) //caso possua o parâmetro NOME, realiza a busca por nome
 		{
-			List<Planet> planets = planetRepository.findByName(name.toUpperCase());
+			List<Planet> planets = planetRepository.findByNameIgnoreCase(name);
 			if (planets.size() == 0)
 			{
 				throw new PlanetNotFoundException(1);
@@ -138,7 +178,7 @@ public class ServicePlanet implements IServicePlanet
 			{
 				planetRepository.delete(planet);
 			}
-			re = new ResponseEntity<String>("{\"Sucesso:\":{\"Mensagem:\":\"Planeta(s) removido(s)\",\"Quantidade\":\""+planets.size()+"\"}}", HttpStatus.OK);
+			re = new ResponseEntity<String>("{\"Sucesso:\":\"Planeta removido\"", HttpStatus.OK);
 		}
 		else
 		{

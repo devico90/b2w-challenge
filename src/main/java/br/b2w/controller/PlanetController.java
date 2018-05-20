@@ -85,10 +85,4 @@ public class PlanetController
 		return servicePlanet.delete(name, id);
 	}
 	
-	@GetMapping("/getPlanetSWAPIByName")
-	public Planet getPlanetSWAPIByName(@RequestParam("name") String name)
-	{
-		return servicePlanet.getPlanetSWAPIByName(name);
-	}
-	
 }

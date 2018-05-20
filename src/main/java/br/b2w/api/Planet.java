@@ -12,7 +12,6 @@ import lombok.Data;
 @Document(collection = "Planet")
 public class Planet 
 {
-	
 	@Id
 	private String id;
 	private String name;
